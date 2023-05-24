@@ -33,3 +33,15 @@ export async function changeVisibilityImage(id: string | undefined) {
   const responseData = await response.json();
   return responseData;
 }
+
+export async function getOneImage(slug: string) {
+  const token = localStorage.getItem("tokenSite");
+  const response = await fetch(`${serverAdress}image/${slug}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const monImage = response.json();
+  return monImage;
+}

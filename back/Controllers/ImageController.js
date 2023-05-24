@@ -41,8 +41,15 @@ imageRouter.post("/images", imgUpload, async (request, reply) => {
     }
   }
   const newImage = new ImageUser({ date, name, isPublic, url, userId });
-  await newImage.save();
-  reply.status(201).send("image enregistré");
+  const image = await newImage.save();
+  reply.status(201).send({
+    date: image.date,
+    isPublic: image.isPublic,
+    name: image.name,
+    url: image.url,
+    userId: image.userId,
+    id: image.id,
+  });
 });
 
 imageRouter.delete("/deleteImage/:imageId", async (request, reply) => {
@@ -103,7 +110,7 @@ imageRouter.get("/imagesUser", async (request, reply) => {
   try {
     const userId = getUserId(request);
     if (!userId) {
-      return reply.status(403).send({response: "Authentification invalide"});
+      return reply.status(403).send({ response: "Authentification invalide" });
     }
 
     const images = await ImageUser.find({ userId: userId });
@@ -123,7 +130,7 @@ imageRouter.get("/imagesUser", async (request, reply) => {
     reply.send(imageData);
   } catch (error) {
     console.log(error);
-    reply.status(500).send({response:"Erreur serveur"});
+    reply.status(500).send({ response: "Erreur serveur" });
   }
 });
 
@@ -159,6 +166,34 @@ imageRouter.put("/images/:id", async (request, reply) => {
   } catch (error) {
     console.log(error);
     reply.status(500).send("Erreur serveur");
+  }
+});
+
+imageRouter.get("/image/:slug", async (request, reply) => {
+  try {
+    const slug = request.params.slug;
+    const image = await ImageUser.findOne({ url: slug });
+    const userId = getUserId(request);
+
+    if (image) {
+      if (image.isPublic || (userId && userId == image.userId) ) {
+        reply.status(200).send({
+          date: image.date,
+          isPublic: image.isPublic,
+          name: image.name,
+          url: image.url,
+          userId: image.userId,
+          id: image.id,
+        });
+      } else {
+        reply.status(403).send({ response: "interdit" });
+      }
+    } else {
+      reply.status(403).send({ response: "interdit" });
+    }
+  } catch (error) {
+    console.log(error);
+    reply.status(500).send({ response: "Erreur serveur" });
   }
 });
 export { imageRouter };

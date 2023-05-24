@@ -15,6 +15,7 @@ export function getUserId(request) {
       "16UQLq1HZ3CNwhvgrarV6pMoA2CDjb4tyF"
     );
     if (!decodedToken.userId) {
+    
       return false;
     }
     return decodedToken.userId;

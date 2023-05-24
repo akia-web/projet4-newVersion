@@ -6,6 +6,7 @@ import Home from "./Components/Home/Home";
 import NewAccount from "./Components/NewAccount/NewAccount";
 import Login from "./Components/Login/Login";
 import Profil from "./Components/profile/profile";
+import OneImage from "./Components/OneImage/OneImage";
 
 function App() {
   // console.log(listImage);
@@ -13,7 +14,7 @@ function App() {
     <>
       <Routes>
         {/* <Route path="/test" element={<Exo profession="physicist"></Exo>} /> */}
-        {/* <Route path="/chemin/:id" element={<IfComponent />} /> */}
+        <Route path="/image/:slug" element={<OneImage></OneImage>} />
         <Route path="/" element={<Home></Home>} />
         <Route path="/inscription" element={<NewAccount></NewAccount>} />
         <Route path="/connexion" element={<Login></Login>} />

@@ -19,7 +19,14 @@ export default function NewAccount() {
       <Link to="/connexion">Se connecter</Link> <br />
       {listImage
         ? listImage.map((list) => (
-            <img className="imageCarte" src={serverAdress + list.name}></img>
+            <div>
+              <Link to={`/image/${list.url}`}>
+                <img
+                  className="imageCarte"
+                  src={serverAdress + list.name}
+                ></img>
+              </Link>
+            </div>
           ))
         : ""}
     </>
