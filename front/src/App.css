@@ -2,3 +2,120 @@
   width: 100px;
   object-fit: cover;
 }
+* {
+  font-family: "Poppins", sans-serif;
+}
+button {
+  background-color: rgb(9, 26, 138);
+  border: none;
+  border-radius: 7px;
+  margin-right: 1em;
+  padding: 10px;
+  box-shadow: 6px 0px 10px 0px rgba(60, 70, 111, 0.32);
+  color: white;
+  -moz-box-shadow: 6px 0px 10px 0px rgba(60, 70, 111, 0.32);
+  -webkit-box-shadow: 6px 0px 10px 0px rgba(60, 70, 111, 0.32);
+  cursor: pointer;
+}
+
+.top {
+  margin-top: 1em;
+}
+
+.container {
+  height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.form {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  background-color: rgb(104, 184, 234);
+  border-radius: 7px;
+  height: 80vh;
+  width: 40%;
+  margin: 0 auto;
+}
+
+input {
+  width: 80%;
+  padding: 10px;
+}
+
+.delete {
+  background-color: rgb(119, 15, 15);
+}
+
+.drag {
+  width: 300px;
+  /* margin: 1em auto; */
+  height: 200px;
+  border: 2px dotted rgb(104, 184, 234);
+}
+
+.drag p {
+  color: rgb(104, 184, 234);
+  text-align: center;
+}
+.drag img {
+  object-fit: contain;
+}
+.containerDrag {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1em;
+  height: 300px;
+  justify-content: space-between;
+}
+
+.containerImage img {
+  width: 180px;
+  height: 180px;
+  object-fit: cover;
+}
+
+.containerMois {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+
+  width: 100%;
+}
+.containerImage {
+  box-shadow: 6px 0px 10px 0px rgba(60, 70, 111, 0.32);
+  border-radius: 10px;
+  border: 1px solid rgb(224, 224, 224);
+  -moz-box-shadow: 6px 0px 10px 0px rgba(60, 70, 111, 0.32);
+  -webkit-box-shadow: 6px 0px 10px 0px rgba(60, 70, 111, 0.32);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  margin-right: 20px;
+  margin-top: 20px;
+}
+
+.cursor {
+  cursor: pointer;
+}
+
+.cursor:hover {
+  font-weight: 800;
+}
+
+.red {
+  color: red;
+}
+
+.containerAllImages {
+  margin: 5em auto 2em;
+  width: 80%;
+}
+
+h2 {
+  color: rgb(104, 184, 234);
+}

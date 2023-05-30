@@ -106,6 +106,35 @@ imageRouter.get("/images", async (request, reply) => {
   }
 });
 
+// imageRouter.get("/imagesUser", async (request, reply) => {
+//   try {
+//     const userId = getUserId(request);
+//     if (!userId) {
+//       return reply.status(403).send({ response: "Authentification invalide" });
+//     }
+
+//     const images = await ImageUser.find({ userId: userId }).sort({date:-1});
+
+//     const imageData = await Promise.all(
+//       images.map(async (image) => {
+//         return {
+//           id: image._id,
+//           name: image.name,
+//           date: image.date,
+//           isPublic: image.isPublic,
+//           url: image.url,
+//         };
+//       })
+//     );
+
+//     reply.send(imageData);
+//   } catch (error) {
+//     console.log(error);
+//     reply.status(500).send({ response: "Erreur serveur" });
+//   }
+// });
+
+
 imageRouter.get("/imagesUser", async (request, reply) => {
   try {
     const userId = getUserId(request);
@@ -113,21 +142,31 @@ imageRouter.get("/imagesUser", async (request, reply) => {
       return reply.status(403).send({ response: "Authentification invalide" });
     }
 
-    const images = await ImageUser.find({ userId: userId });
+    const images = await ImageUser.find({ userId: userId }).sort({ date: -1 });
 
-    const imageData = await Promise.all(
-      images.map(async (image) => {
-        return {
-          id: image._id,
-          name: image.name,
-          date: image.date,
-          isPublic: image.isPublic,
-          url: image.url,
-        };
-      })
-    );
+    const imageData = images.reduce((acc, image) => {
+      const month = image.date.toLocaleString('fr-FR', { month: 'long' });
+      if (!acc[month]) {
+        acc[month] = [];
+      }
+      acc[month].push({
+        id: image._id,
+        name: image.name,
+        date: image.date,
+        isPublic: image.isPublic,
+        url: image.url,
+      });
+      return acc;
+    }, {});
 
-    reply.send(imageData);
+    const formattedData = Object.keys(imageData).map(month => {
+      return {
+        mois: month,
+        images: imageData[month]
+      };
+    });
+
+    reply.send(formattedData);
   } catch (error) {
     console.log(error);
     reply.status(500).send({ response: "Erreur serveur" });

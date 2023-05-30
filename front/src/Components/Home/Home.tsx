@@ -15,20 +15,30 @@ export default function NewAccount() {
   }, []);
   return (
     <>
-      <Link to="/inscription">Inscription</Link>
-      <Link to="/connexion">Se connecter</Link> <br />
-      {listImage
-        ? listImage.map((list) => (
-            <div>
-              <Link to={`/image/${list.url}`}>
-                <img
-                  className="imageCarte"
-                  src={serverAdress + list.name}
-                ></img>
-              </Link>
-            </div>
-          ))
-        : ""}
+      <div className="header">
+        <Link to="/inscription">
+          <button>Inscription</button>
+        </Link>
+        <Link to="/connexion">
+          <button>Se connecter</button>
+        </Link>
+        <br />
+      </div>
+
+      <div className="containerMois">
+        {listImage
+          ? listImage.map((list) => (
+              <div className="containerImage">
+                <Link to={`/image/${list.url}`}>
+                  <img
+                    className="imageCarte"
+                    src={serverAdress + list.name}
+                  ></img>
+                </Link>
+              </div>
+            ))
+          : ""}
+      </div>
     </>
   );
 }

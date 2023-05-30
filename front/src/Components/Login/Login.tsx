@@ -47,21 +47,30 @@ export default function Login() {
 
   return (
     <>
-      <input
-        type="email"
-        id="pseudo"
-        value={pseudo}
-        onChange={handlePseudoChange}
-      />
-      <br />
-      <input
-        type="password"
-        id="password"
-        value={password}
-        onChange={handlePasswordChange}
-      />{" "}
-      <br />
-      <button onClick={submit}>S'inscrire</button>
+      <div className="container">
+        <div className="form">
+          <h1 className="titre">Connexion à votre compte</h1>
+          <input
+            type="email"
+            placeholder="email"
+            id="pseudo"
+            value={pseudo}
+            onChange={handlePseudoChange}
+          />
+          <br />
+          <input
+            type="password"
+            placeholder="mot de passe"
+            id="password"
+            value={password}
+            onChange={handlePasswordChange}
+          />{" "}
+          <br />
+          <button className="top" onClick={submit}>
+            Se connecter
+          </button>
+        </div>
+      </div>
     </>
   );
 }

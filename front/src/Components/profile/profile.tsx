@@ -7,11 +7,12 @@ import {
   imageByUser,
 } from "../../Services/connexionService";
 import ImageUser from "../../Models/ImageUser";
+import ListeImage from "../../Models/ListeImage";
 
 export default function Profil() {
   const token = localStorage.getItem("tokenSite");
   const navigate = useNavigate();
-  const [listImage, setListImage] = useState<ImageUser[]>();
+  const [listImage, setListImage] = useState<ListeImage[]>();
   const [droppedImage, setDroppedImage] = useState("");
   const [imageFile, setImage] = useState<Blob | string>();
 
@@ -23,9 +24,10 @@ export default function Profil() {
     });
 
     imageByUser().then((res) => {
-      console.log(res);
+      // console.log(res);
       if (res.response !== "Authentification invalide") {
         setListImage(res);
+        console.log(listImage);
       }
     });
   }, []);
@@ -48,24 +50,34 @@ export default function Profil() {
     navigate("/");
   }
 
-  function changeVisibility(id: string | undefined) {
+  function changeVisibility(
+    id: string | undefined,
+    indexMonth: number,
+    indexImage: number
+  ) {
     changeVisibilityImage(id).then((res) => {
       setListImage((prevState) => {
-        const updatedList = prevState!.map((item) => {
-          if (item.id === id) {
+        return prevState!.map((list, listIndex) => {
+          if (listIndex === indexMonth) {
+            const updatedImages = list.images.map((image, imageIndex) => {
+              if (imageIndex === indexImage) {
+                return {
+                  ...image,
+                  isPublic: !image.isPublic,
+                };
+              }
+              return image;
+            });
             return {
-              ...item,
-              isPublic: !item.isPublic,
+              ...list,
+              images: updatedImages,
             };
           }
-          return item;
+          return list;
         });
-
-        return updatedList;
       });
     });
   }
-
   const handleDragOver = (e: any) => {
     e.preventDefault();
   };
@@ -95,7 +107,35 @@ export default function Profil() {
     })
       .then((response) => response.json())
       .then((responseData: ImageUser) => {
-        setListImage((prevState) => [...prevState!, responseData]);
+        setListImage((prevState) => {
+          const date = new Date(responseData.date);
+          const currentMonth = date.toLocaleString("fr-FR", { month: "long" });
+          console.log(currentMonth);
+          const monthIndex = prevState!.findIndex(
+            (list) => list.mois === currentMonth
+          );
+
+          console.log(monthIndex);
+          if (monthIndex !== -1) {
+            return prevState!.map((list, index) => {
+              if (index === monthIndex) {
+                return {
+                  ...list,
+                  images: [responseData, ...list.images],
+                };
+              }
+              return list;
+            });
+          } else {
+            return [
+              ...prevState!,
+              {
+                mois: currentMonth,
+                images: [responseData],
+              },
+            ];
+          }
+        });
         setDroppedImage("");
       })
       .catch((error) => {
@@ -122,7 +162,11 @@ export default function Profil() {
       });
   }
 
-  function deleteImage(id: string | undefined) {
+  function deleteImage(
+    id: string | undefined,
+    indexMonth: number,
+    indexImage: number
+  ) {
     const url = `${serverAdress}deleteImage/${id}`;
 
     fetch(url, {
@@ -133,7 +177,17 @@ export default function Profil() {
     })
       .then(() => {
         setListImage((prevState) =>
-          prevState!.filter((image) => image.id !== id)
+          prevState!.map((list, monthIndex) => {
+            if (monthIndex === indexMonth) {
+              return {
+                ...list,
+                images: list.images.filter(
+                  (image, imageIndex) => imageIndex !== indexImage
+                ),
+              };
+            }
+            return list;
+          })
         );
       })
       .catch((error) => {
@@ -141,53 +195,86 @@ export default function Profil() {
       });
   }
 
-  function getMonthFromDate(dateString: string) {
+  function getDate(dateString: Date) {
     const date = new Date(dateString);
-    return date.toLocaleString("default", { month: "long" });
+    const jour = date.getDate();
+    const mois = date.getMonth() + 1;
+    const annee = date.getFullYear();
+    return jour + "/" + mois + "/" + annee;
   }
 
   // isAuthorised();
   return (
     <>
-      <button onClick={deconnexion}>Se deconnecter</button>{" "}
-      <button onClick={deleteAccount}>Supprimer le compte</button>
-      <div
-        onDragOver={handleDragOver}
-        onDrop={handleDrop}
-        style={{ width: "300px", height: "300px", border: "1px solid black" }}
-      >
-        {droppedImage ? (
-          <img
-            src={droppedImage}
-            alt="Dropped Image"
-            style={{ width: "100%", height: "100%" }}
-          />
-        ) : (
-          <p>Drag and drop an image here</p>
-        )}
+      <div className="header">
+        <Link to={"/"}>
+          {" "}
+          <span className="material-symbols-outlined">home</span>
+        </Link>
+        <button onClick={deconnexion}>Se deconnecter</button>{" "}
+        <button className="delete" onClick={deleteAccount}>
+          Supprimer le compte
+        </button>
       </div>
-      <button onClick={sendImage}>Envoyer l'image</button>
+
+      <div className="containerDrag">
+        <div className="drag" onDragOver={handleDragOver} onDrop={handleDrop}>
+          {droppedImage ? (
+            <img
+              src={droppedImage}
+              alt="Dropped Image"
+              style={{ width: "100%", height: "100%" }}
+            />
+          ) : (
+            <p>Déposez une image ici</p>
+          )}
+        </div>
+        <button onClick={sendImage}>Envoyer l'image</button>
+      </div>
+
       {listImage
-        ? listImage.map((list) => (
-            <div>
-              <Link to={`/image/${list.url}`}>
-                <img
-                  className="imageCarte"
-                  src={serverAdress + list.name}
-                ></img>
-              </Link>
-              <br />
-              <button onClick={changeVisibility.bind(null, list.id)}>
-                Changer la visibilité
-              </button>
-              <button onClick={deleteImage.bind(null, list.id)}>
-                Supprimer l'image
-              </button>
-              <p>{list.isPublic ? "public" : "privé"}</p>
+        ? listImage.map((list, listIndex) => (
+            <div className="containerAllImages">
+              <h2>{list.mois}</h2>
+              <div className="containerMois">
+                {list.images.map((image, imageIndex) => (
+                  <div className="containerImage">
+                    <Link to={`/image/${image.url}`}>
+                      <img src={serverAdress + image.name} alt="" />
+                    </Link>{" "}
+                    <br />
+                    <p>{getDate(image.date)}</p>
+                    <span
+                      className="material-symbols-outlined cursor"
+                      onClick={changeVisibility.bind(
+                        null,
+                        image.id,
+                        listIndex,
+                        imageIndex
+                      )}
+                    >
+                      {image.isPublic ? "visibility" : "visibility_off"}
+                    </span>
+                    <p>{image.isPublic ? "public" : "privé"}</p>
+                    <span
+                      className="material-symbols-outlined cursor red"
+                      onClick={deleteImage.bind(
+                        null,
+                        image.id,
+                        listIndex,
+                        imageIndex
+                      )}
+                    >
+                      delete_forever
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           ))
         : ""}
-      <div className="image-container">
+
+      {/* <div className="image-container">
         {listImage
           ? listImage
               .sort((a, b) => {
@@ -230,7 +317,7 @@ export default function Profil() {
                 </div>
               ))
           : ""}
-      </div>
+      </div> */}
     </>
   );
 }

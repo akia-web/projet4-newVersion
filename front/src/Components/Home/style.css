@@ -1,0 +1,8 @@
+.header {
+  background-color: rgb(104, 184, 234);
+  padding: 10px;
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+
